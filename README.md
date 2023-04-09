@@ -13,6 +13,13 @@ b *= "1"
 !a = "a"
 !b = a
 ```
+## How to join two strings?
+```
+a = "Count:"
+b = "1"
+strCat a and b to a
+print a
+```
 ## How to print?
 ```
 print "123"
