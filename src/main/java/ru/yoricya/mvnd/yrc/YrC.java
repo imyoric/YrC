@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public class YrC {
     public String[] scrm;
@@ -38,10 +39,11 @@ public class YrC {
             @Override
             public void onFunc(String[] args) {
                 if((OnConstructor) GLOBCONSTR.get(args[1])!=null){
+                    GLOB.put("END."+args[2], "");
                     OnConstructor f= (OnConstructor)GLOBCONSTR.get(args[1]);
                     read+=1;
                     StringBuilder scrp = new StringBuilder();
-                    while (!scrm[read].equals("END")) {
+                    while (!scrm[read].equals("END."+args[2])) {
                         scrp.append(scrm[read]).append("\n");
                         read+=1;
                     }
@@ -60,6 +62,15 @@ public class YrC {
                 }else{
                     printErr("Ошибка");
                 }
+            }
+        });
+        addFunc("strCat", new OnFunction() {
+            @Override
+            public void onFunc(String[] str) {
+                if(str.length >= 5){
+                    String a = ParseText(str[1]) + ParseText(str[3]);
+                    setVar(str[5], a);
+                }else printErr("Не все аргументы указаны!");
             }
         });
 
@@ -115,6 +126,9 @@ public class YrC {
                 args[0] = args[0].replace("-", "");
                 if(args[0].equals("")) {
 
+                }else
+                if(args[0].equals("wait")) {
+                    TimeUnit.MILLISECONDS.sleep(Integer.parseInt(ParseText(args[1])));
                 }
                 else
                 if(GLOB.get(args[0]) != null){
@@ -181,6 +195,80 @@ public class YrC {
         }
         return true;
     }
+    public boolean parseOnly(String scrm){
+
+        try{
+            args = scrm.split(" ");
+            args[0] = args[0].replace("-", "");
+            if(args[0].equals("")) {
+
+            }else
+            if(args[0].equals("wait")) {
+                TimeUnit.MILLISECONDS.sleep(Integer.parseInt(ParseText(args[1])));
+            }
+            else
+            if(GLOB.get(args[0]) != null){
+                try{
+                    OnFunction rn = (OnFunction) GLOB.get(args[0]);
+                    rn.onFunc(args);
+                }catch (Exception e){
+                    if(args.length == 1) {
+                        System.out.println(GLOB.get(args[0]));
+                    }
+                }
+            }else if(args.length == 1){
+                System.err.println("Ошибка! '"+args[0]+ ":"+read+"' - Переменная/Функция не инициализирована!");
+            }
+            if(args.length > 1 && args[1].equals("=")){
+                String prs = ParseText(Arrays.toString(args).replace(",", ""));
+                if(prs == null) {
+                    System.err.println("Ошибка! textParse Error! '" + args[0] + ":" + read + "'");
+                    return false;
+                }
+                GLOB.put(args[0], prs);
+            } else if(args.length > 2 && args[1].equals("+=")){
+                String prs = ParseText(Arrays.toString(args).replace(",", ""));
+                if(prs == null) {
+                    System.err.println("Ошибка! textParse Error! '" + args[0] + ":" + read + "'");
+                    return false;
+                }
+                int a = Integer.parseInt((String) GLOB.get(args[0]));
+                a += Integer.parseInt(ParseText(args[2]));
+                GLOB.put(args[0], a);
+            } else if(args.length > 2 && args[1].equals("-=")) {
+                String prs = ParseText(Arrays.toString(args).replace(",", ""));
+                if (prs == null) {
+                    System.err.println("Ошибка! textParse Error! '" + args[0] + ":" + read + "'");
+                    return false;
+                }
+                int a = Integer.parseInt((String) GLOB.get(args[0]));
+                a -= Integer.parseInt(ParseText(args[2]));
+                GLOB.put(args[0], a);
+            } else if(args.length > 2 && args[1].equals("*=")) {
+                String prs = ParseText(Arrays.toString(args).replace(",", ""));
+                if (prs == null) {
+                    System.err.println("Ошибка! textParse Error! '" + args[0] + ":" + read + "'");
+                    return false;
+                }
+                //System.out.println(args[0]);
+                int a = Integer.parseInt((String) GLOB.get(args[0]));
+                a *= Integer.parseInt(ParseText(args[2]));
+                GLOB.put(args[0], a);
+            } else if(args.length > 2 && args[1].equals("/=")) {
+                String prs = ParseText(Arrays.toString(args).replace(",", ""));
+                if (prs == null) {
+                    System.err.println("Ошибка! textParse Error! '" + args[0] + ":" + read + "'");
+                    return false;
+                }
+                int a = Integer.parseInt((String) GLOB.get(args[0]));
+                a /= Integer.parseInt(ParseText(args[2]));
+                GLOB.put(args[0], a);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
     public void printErr(String err){
         System.err.println("Ошибка! '" + args[1] + ":" + read + "' - "+err);
     }
@@ -203,7 +291,7 @@ public class YrC {
             }
         }catch (Exception e){e.printStackTrace();}
     }
-    private String ParseText(String str){
+    public String ParseText(String str){
         String[] strd = str.split("\"");
         if(strd.length < 2) {
             str = (String) GLOB.get(str);
