@@ -116,7 +116,7 @@ public class YrC {
                         y.GLOBCONSTR = GLOBCONSTR;
                         y.GLOB = GLOB;
                         for(int i = 1; i != args.length ; i++){
-                            y.setVar(var+".args."+(i-1), args[i]);
+                            y.setVar(var+".args."+(i-1), y.ParseText(args[i]));
                         }
                         y.setVar(var+".args.length", String.valueOf(args.length));
                         y.parse(scr);
