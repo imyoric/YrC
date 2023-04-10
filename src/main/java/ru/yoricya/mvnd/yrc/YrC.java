@@ -53,10 +53,10 @@ public class YrC {
                     }else if(argss[2].equals("<=")){
                         if(Long.parseLong(ParseText(argss[1])) <= Long.parseLong(ParseText(argss[3]))) IFFunc(argss);
                     }else{
-                        printErr("Не известный оператор!");
+                        printErr("Не известный оператор");
                     }
                 }else{
-                    printErr("Не все аргументы указаны!");
+                    printErr("Не все аргументы указаны");
                 }
             }
         });
@@ -95,16 +95,26 @@ public class YrC {
                 if(str.length >= 5){
                     String a = ParseText(str[1]) + ParseText(str[3]);
                     setVar(str[5], a);
-                }else printErr("Не все аргументы указаны!");
+                }else printErr("Не все аргументы указаны");
             }
         });
-
+        addFunc("delete", new OnFunction() {
+            @Override
+            public void onFunc(String[] str) {
+                if(str.length == 2){
+                    GLOB.remove(str[1]);
+                }else printErr("Синтаксическая ошибка");
+            }
+        });
         GLOBCONSTR.put("Function", new OnConstructor() {
             @Override
             public void onConstr(String var, String scr) {
                 GLOB.put(var, new OnFunction() {
                     @Override
                     public void onFunc(String[] args) {
+                        for(int i = 0; i != args.length ; i++){
+                            setVar(var+".args."+i, ParseText(args[i]));
+                        }
                         YrC y = new YrC();
                         y.GLOBCONSTR = GLOBCONSTR;
                         y.GLOB = GLOB;
@@ -117,7 +127,6 @@ public class YrC {
         });
     }
     private void IFFunc(String[] argss){
-        System.out.println(Arrays.toString(argss));
         if(argss[4].equals("cast")){
             OnFunction rn = (OnFunction) GLOB.get(argss[5]);
             StringBuilder newArgs = new StringBuilder();
