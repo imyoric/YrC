@@ -39,7 +39,7 @@ public class YrC {
         addFunc("if", new OnFunction() {
             @Override
             public void onFunc(String[] argss) {
-                if(argss.length <= 5){
+                if(argss.length >= 5){
                     if(argss[2].equals("==")){
                         if(ParseText(argss[1]).equals(ParseText(argss[3]))) IFFunc(argss);
                     }else if(argss[2].equals("!=")){
@@ -118,7 +118,7 @@ public class YrC {
                         for(int i = 1; i != args.length ; i++){
                             y.setVar(var+".args."+(i-1), y.ParseText(args[i]));
                         }
-                        y.setVar(var+".args.length", String.valueOf(args.length));
+                        y.setVar(var+".args.length", String.valueOf(args.length - 1));
                         y.parse(scr);
                         GLOB = y.GLOB;
                         GLOBCONSTR = y.GLOBCONSTR;
