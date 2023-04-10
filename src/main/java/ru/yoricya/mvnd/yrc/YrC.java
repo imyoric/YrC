@@ -22,7 +22,7 @@ public class YrC {
         GLOB.put("YrC.codeVer", "002");
         GLOB.put("print", new OnFunction() {
             @Override
-            public void onFunc(String[] argsg) {
+            public boolean onFunc(String[] argsg) {
                 String prs = ParseText(Arrays.toString(argsg).replace(",", ""));
                 argsg[1] = argsg[1].replace(" ", "");
                 if(prs == null){
@@ -34,11 +34,39 @@ public class YrC {
                     }
                 }
                 System.out.println(prs);
+                return true;
+            }
+        });
+        addFunc("if", new OnFunction() {
+            @Override
+            public boolean onFunc(String[] argss) {
+                if(argss.length >= 5){
+                    boolean ret = true;
+                    if(argss[2].equals("==")){
+                        if(ParseText(argss[1]).equals(ParseText(argss[3]))) ret = IFFunc(argss);
+                    }else if(argss[2].equals("!=")){
+                        if(!ParseText(argss[1]).equals(ParseText(argss[3]))) ret = IFFunc(argss);
+                    }else if(argss[2].equals(">")){
+                        if(Long.parseLong(ParseText(argss[1])) > Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
+                    }else if(argss[2].equals("<")){
+                        if(Long.parseLong(ParseText(argss[1])) < Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
+                    }else if(argss[2].equals(">=")){
+                        if(Long.parseLong(ParseText(argss[1])) >= Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
+                    }else if(argss[2].equals("<=")){
+                        if(Long.parseLong(ParseText(argss[1])) <= Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
+                    }else{
+                        printErr("Не известный оператор!");
+                    }
+                    return ret;
+                }else{
+                    printErr("Не все аргументы указаны!");
+                }
+                return true;
             }
         });
         GLOB.put("new", new OnFunction() {
             @Override
-            public void onFunc(String[] args) {
+            public boolean onFunc(String[] args) {
                 if((OnConstructor) GLOBCONSTR.get(args[1])!=null){
                     GLOB.put("END."+args[2], "");
                     OnConstructor f= (OnConstructor)GLOBCONSTR.get(args[1]);
@@ -53,51 +81,99 @@ public class YrC {
                 }else{
                     System.err.println("Ошибка! '"+args[0]+ ":"+read+"' - Такой конструкции не существует!");
                 }
+                return true;
             }
         });
         GLOB.put("net_get_contents", new OnFunction() {
             @Override
-            public void onFunc(String[] args) {
+            public boolean onFunc(String[] args) {
                 if(args.length > 2) {
                     GLOB.put(args[2],NetGetContents(ParseText(args[1])));
                 }else{
                     printErr("Ошибка");
                 }
+                return true;
             }
         });
         addFunc("strCat", new OnFunction() {
             @Override
-            public void onFunc(String[] str) {
+            public boolean onFunc(String[] str) {
                 if(str.length >= 5){
                     String a = ParseText(str[1]) + ParseText(str[3]);
                     setVar(str[5], a);
                 }else printErr("Не все аргументы указаны!");
+                return true;
             }
         });
-
+        addFunc("delete", new OnFunction() {
+            @Override
+            public boolean onFunc(String[] str) {
+                if(str.length == 2){
+                    GLOB.remove(str[1]);
+                }else printErr("Синтаксическая ошибка");
+                return true;
+            }
+        });
+        addFunc("return", new OnFunction() {
+            @Override
+            public boolean onFunc(String[] str) {
+                if(str.length == 2){
+                    return Boolean.parseBoolean(ParseText(str[1]));
+                }else {
+                    return false;
+                }
+            }
+        });
+        addFunc("exit", new OnFunction() {
+            @Override
+            public boolean onFunc(String[] str) {
+                if(str.length == 2){
+                    System.exit(Integer.parseInt(ParseText(str[1])));
+                }else {
+                    System.exit(0);
+                }
+                return true;
+            }
+        });
         GLOBCONSTR.put("Function", new OnConstructor() {
             @Override
             public void onConstr(String var, String scr) {
                 GLOB.put(var, new OnFunction() {
                     @Override
-                    public void onFunc(String[] args) {
+                    public boolean onFunc(String[] args) {
                         YrC y = new YrC();
                         y.GLOBCONSTR = GLOBCONSTR;
                         y.GLOB = GLOB;
+                        for(int i = 1; i != args.length ; i++){
+                            y.setVar(var+".args."+(i-1), y.ParseText(args[i]));
+                        }
+                        y.setVar(var+".args.length", String.valueOf(args.length - 1));
                         y.parse(scr);
                         GLOB = y.GLOB;
                         GLOBCONSTR = y.GLOBCONSTR;
+                        return true;
                     }
                 });
             }
         });
+    }
+    private boolean IFFunc(String[] argss){
+        if(argss[4].equals("cast")){
+            OnFunction rn = (OnFunction) GLOB.get(argss[5]);
+            StringBuilder newArgs = new StringBuilder();
+            for(int i = 6; i != argss.length; i+=1){
+                newArgs.append(" ").append(argss[i]);
+            }
+            return rn.onFunc(newArgs.toString().split(" "));
+        }else printErr("Ожидается тип: cast");
+        return true;
     }
 
     private YrC getThis(){
         return this;
     }
     public interface OnFunction {
-        void onFunc(String[] args);
+        boolean onFunc(String[] args);
     }
     public interface OnConstructor {
         void onConstr(String var, String cmds);
@@ -127,15 +203,18 @@ public class YrC {
                 args[0] = args[0].replace("-", "");
                 if(args[0].equals("")) {
 
-                }else
-                if(args[0].equals("wait")) {
+                }
+                else if(args[0].equals("wait")) {
                     TimeUnit.MILLISECONDS.sleep(Integer.parseInt(ParseText(args[1])));
                 }
                 else
                 if(GLOB.get(args[0]) != null){
                     try{
                         OnFunction rn = (OnFunction) GLOB.get(args[0]);
-                        rn.onFunc(args);
+                        boolean as = rn.onFunc(args);
+                        if(!as){
+                            return false;
+                        }
                     }catch (Exception e){
                         if(args.length == 1) {
                             System.out.println(GLOB.get(args[0]));
