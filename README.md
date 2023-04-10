@@ -1,5 +1,5 @@
 # YrC
-# How to use in Maven projects?
+# How to add in Maven projects?
 * Import repo:
 ```
     <repositories>
@@ -21,3 +21,5 @@
   </dependency>
 </dependencies>
 ```
+# How to use?
+* Check: [All Methods and Functions](funcs.md)
