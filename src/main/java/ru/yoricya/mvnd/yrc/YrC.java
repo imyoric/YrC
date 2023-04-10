@@ -36,6 +36,30 @@ public class YrC {
                 System.out.println(prs);
             }
         });
+        GLOB.put("if", new OnFunction() {
+            @Override
+            public void onFunc(String[] argss) {
+                if(argss.length == 5){
+                    if(argss[2].equals("==")){
+                        if(ParseText(argss[1]).equals(ParseText(argss[3]))) IFFunc(argss);
+                    }else if(argss[2].equals("!=")){
+                        if(!ParseText(argss[1]).equals(ParseText(argss[3]))) IFFunc(argss);
+                    }else if(argss[2].equals(">")){
+                        if(Long.parseLong(ParseText(argss[1])) > Long.parseLong(ParseText(argss[3]))) IFFunc(argss);
+                    }else if(argss[2].equals("<")){
+                        if(Long.parseLong(ParseText(argss[1])) < Long.parseLong(ParseText(argss[3]))) IFFunc(argss);
+                    }else if(argss[2].equals(">=")){
+                        if(Long.parseLong(ParseText(argss[1])) >= Long.parseLong(ParseText(argss[3]))) IFFunc(argss);
+                    }else if(argss[2].equals("<=")){
+                        if(Long.parseLong(ParseText(argss[1])) <= Long.parseLong(ParseText(argss[3]))) IFFunc(argss);
+                    }else{
+                        printErr("Не известный оператор!");
+                    }
+                }else{
+                    printErr("Не все аргументы указаны!");
+                }
+            }
+        });
         GLOB.put("new", new OnFunction() {
             @Override
             public void onFunc(String[] args) {
@@ -91,6 +115,16 @@ public class YrC {
                 });
             }
         });
+    }
+    private void IFFunc(String[] argss){
+        if(argss[4].equals("cast")){
+            OnFunction rn = (OnFunction) GLOB.get(argss[5]);
+            StringBuilder newArgs = new StringBuilder();
+            for(int i = 6; i != argss.length; i+=1){
+                newArgs.append(" ").append(argss[i]);
+            }
+            rn.onFunc(newArgs.toString().split(" "));
+        }else printErr("Ожидается тип: cast");
     }
 
     private YrC getThis(){
