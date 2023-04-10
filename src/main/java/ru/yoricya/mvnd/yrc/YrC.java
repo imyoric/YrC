@@ -41,21 +41,23 @@ public class YrC {
             @Override
             public boolean onFunc(String[] argss) {
                 if(argss.length >= 5){
+                    boolean ret = true;
                     if(argss[2].equals("==")){
-                        if(ParseText(argss[1]).equals(ParseText(argss[3]))) IFFunc(argss);
+                        if(ParseText(argss[1]).equals(ParseText(argss[3]))) ret = IFFunc(argss);
                     }else if(argss[2].equals("!=")){
-                        if(!ParseText(argss[1]).equals(ParseText(argss[3]))) IFFunc(argss);
+                        if(!ParseText(argss[1]).equals(ParseText(argss[3]))) ret = IFFunc(argss);
                     }else if(argss[2].equals(">")){
-                        if(Long.parseLong(ParseText(argss[1])) > Long.parseLong(ParseText(argss[3]))) IFFunc(argss);
+                        if(Long.parseLong(ParseText(argss[1])) > Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
                     }else if(argss[2].equals("<")){
-                        if(Long.parseLong(ParseText(argss[1])) < Long.parseLong(ParseText(argss[3]))) IFFunc(argss);
+                        if(Long.parseLong(ParseText(argss[1])) < Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
                     }else if(argss[2].equals(">=")){
-                        if(Long.parseLong(ParseText(argss[1])) >= Long.parseLong(ParseText(argss[3]))) IFFunc(argss);
+                        if(Long.parseLong(ParseText(argss[1])) >= Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
                     }else if(argss[2].equals("<=")){
-                        if(Long.parseLong(ParseText(argss[1])) <= Long.parseLong(ParseText(argss[3]))) IFFunc(argss);
+                        if(Long.parseLong(ParseText(argss[1])) <= Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
                     }else{
                         printErr("Не известный оператор!");
                     }
+                    return ret;
                 }else{
                     printErr("Не все аргументы указаны!");
                 }
@@ -151,15 +153,16 @@ public class YrC {
             }
         });
     }
-    private void IFFunc(String[] argss){
+    private boolean IFFunc(String[] argss){
         if(argss[4].equals("cast")){
             OnFunction rn = (OnFunction) GLOB.get(argss[5]);
             StringBuilder newArgs = new StringBuilder();
             for(int i = 6; i != argss.length; i+=1){
                 newArgs.append(" ").append(argss[i]);
             }
-            rn.onFunc(newArgs.toString().split(" "));
+            return rn.onFunc(newArgs.toString().split(" "));
         }else printErr("Ожидается тип: cast");
+        return true;
     }
 
     private YrC getThis(){
@@ -205,7 +208,6 @@ public class YrC {
                     try{
                         OnFunction rn = (OnFunction) GLOB.get(args[0]);
                         boolean as = rn.onFunc(args);
-                        System.out.println(as);
                         if(!as){
                             return false;
                         }
