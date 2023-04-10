@@ -22,4 +22,4 @@
 </dependencies>
 ```
 # How to use?
-* Check: [All Methods and Functions](funcs.md)
+* Check: [All Methods and Functions](Funcs.md)
