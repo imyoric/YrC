@@ -26,6 +26,10 @@ print "123"
 a = "123"
 print a
 ```
+## How to get current YrC Version?
+```
+print YrC.ver
+```
 ## How to parse http(s)?
 ```
 net_get_contents "https://google.com" a
@@ -36,6 +40,21 @@ print a
 a = "123"
 delete a
 ```
+## How to stop code execution?
+```
+return
+```
+* example from `Function`:
+```
+new Function func
+-print "1"
+-if func.args.0 == "1" cast return
+-print "2"
+END.func
+func "1"
+print "3"
+```
+_Output: 13_
 ## How to use IF?
 ```
 new Function ifTrue
