@@ -48,6 +48,20 @@ END.myfunc
 ```
 myfunc
 ```
+## How to use IF?(Coming soon.)
+* This is coming soon! And so Methods can change!
+```
+new Function ifTrue
+-print "TRUE!"
+END.ifTrue
+
+new Function ifFalse
+-print "Nea! Its False"
+END.ifTrue
+
+if a == b cast ifTrue
+if a != b cast ifFalse
+```
 # Coming soon...
 ## Where IF?
 * Not yet, coming soon
