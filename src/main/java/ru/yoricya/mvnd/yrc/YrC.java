@@ -39,7 +39,7 @@ public class YrC {
         addFunc("if", new OnFunction() {
             @Override
             public void onFunc(String[] argss) {
-                if(argss.length >= 5){
+                if(argss.length <= 5){
                     if(argss[2].equals("==")){
                         if(ParseText(argss[1]).equals(ParseText(argss[3]))) IFFunc(argss);
                     }else if(argss[2].equals("!=")){
@@ -53,10 +53,10 @@ public class YrC {
                     }else if(argss[2].equals("<=")){
                         if(Long.parseLong(ParseText(argss[1])) <= Long.parseLong(ParseText(argss[3]))) IFFunc(argss);
                     }else{
-                        printErr("Не известный оператор");
+                        printErr("Не известный оператор!");
                     }
                 }else{
-                    printErr("Не все аргументы указаны");
+                    printErr("Не все аргументы указаны!");
                 }
             }
         });
@@ -95,7 +95,7 @@ public class YrC {
                 if(str.length >= 5){
                     String a = ParseText(str[1]) + ParseText(str[3]);
                     setVar(str[5], a);
-                }else printErr("Не все аргументы указаны");
+                }else printErr("Не все аргументы указаны!");
             }
         });
         addFunc("delete", new OnFunction() {
@@ -115,6 +115,10 @@ public class YrC {
                         YrC y = new YrC();
                         y.GLOBCONSTR = GLOBCONSTR;
                         y.GLOB = GLOB;
+                        for(int i = 1; i != args.length ; i++){
+                            setVar(var+".args."+(i-1), args[i]);
+                        }
+                        setVar(var+".args.length", String.valueOf(args.length));
                         y.parse(scr);
                         GLOB = y.GLOB;
                         GLOBCONSTR = y.GLOBCONSTR;
@@ -124,6 +128,7 @@ public class YrC {
         });
     }
     private void IFFunc(String[] argss){
+        System.out.println(Arrays.toString(argss));
         if(argss[4].equals("cast")){
             OnFunction rn = (OnFunction) GLOB.get(argss[5]);
             StringBuilder newArgs = new StringBuilder();
@@ -312,7 +317,7 @@ public class YrC {
         return true;
     }
     public void printErr(String err){
-        System.err.println("Ошибка! '" + args[0] + ":" + read + "' - "+err);
+        System.err.println("Ошибка! '" + args[1] + ":" + read + "' - "+err);
     }
     public void addFunc(String name , OnFunction func){
         GLOB.put(name, func);
