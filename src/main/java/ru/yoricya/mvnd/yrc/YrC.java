@@ -117,7 +117,11 @@ public class YrC {
         addFunc("return", new OnFunction() {
             @Override
             public boolean onFunc(String[] str) {
-                return false;
+                if(str.length == 2){
+                    return Boolean.parseBoolean(ParseText(str[1]));
+                }else {
+                    return false;
+                }
             }
         });
         addFunc("exit", new OnFunction() {
