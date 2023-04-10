@@ -18,7 +18,8 @@ public class YrC {
     public HashMap<String, Object> GLOBCONSTR = new HashMap<>();
     public YrC(){
         GLOB.put("END", "");
-        GLOB.put("ScrVer", "1.0");
+        GLOB.put("YrC.ver", "1.1/Beta");
+        GLOB.put("YrC.codeVer", "002");
         GLOB.put("print", new OnFunction() {
             @Override
             public void onFunc(String[] argsg) {
