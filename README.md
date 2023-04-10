@@ -23,3 +23,6 @@
 ```
 # For YrC Developers:
 * Check: [All Methods and Functions](Funcs.md)
+
+# For All:
+* Check: [Security Policy](SECURITY.md)
