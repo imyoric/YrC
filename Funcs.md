@@ -31,23 +31,6 @@ print a
 net_get_contents "https://google.com" a
 print a
 ```
-## What /SP - /RE?
-/RE = "/n" (Return symbols)
-
-/SP = " " (Space symbols)
-
-# YrC Constructors
-## Functions
-### How to create custom function?
-```
-new Function myfunc
--print "This/SPis/SPmy/SPfunction!"
-END.myfunc
-```
-### How to cast my function?
-```
-myfunc
-```
 ## How to use IF?(Coming soon.)
 * This is coming soon! And so Methods can change!
 ```
@@ -64,6 +47,23 @@ b = "2"
 
 if a == b cast ifTrue
 if a != b cast ifFalse
+```
+## What /SP - /RE?
+/RE = "/n" (Return symbols)
+
+/SP = " " (Space symbols)
+
+# YrC Constructors
+## Functions
+### How to create custom function?
+```
+new Function myfunc
+-print "This/SPis/SPmy/SPfunction!"
+END.myfunc
+```
+### How to cast my function?
+```
+myfunc
 ```
 # Coming soon...
 ## Where IF?
