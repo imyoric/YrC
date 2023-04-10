@@ -106,6 +106,16 @@ public class YrC {
                 }else printErr("Синтаксическая ошибка");
             }
         });
+        addFunc("exit", new OnFunction() {
+            @Override
+            public void onFunc(String[] str) {
+                if(str.length == 2){
+                    System.exit(Integer.parseInt(ParseText(str[1])));
+                }else {
+                    System.exit(0);
+                }
+            }
+        });
         GLOBCONSTR.put("Function", new OnConstructor() {
             @Override
             public void onConstr(String var, String scr) {
@@ -128,7 +138,6 @@ public class YrC {
         });
     }
     private void IFFunc(String[] argss){
-        System.out.println(Arrays.toString(argss));
         if(argss[4].equals("cast")){
             OnFunction rn = (OnFunction) GLOB.get(argss[5]);
             StringBuilder newArgs = new StringBuilder();
@@ -173,6 +182,8 @@ public class YrC {
                 args[0] = args[0].replace("-", "");
                 if(args[0].equals("")) {
 
+                }else if(args[0].equals("return")) {
+                    return true;
                 }else
                 if(args[0].equals("wait")) {
                     TimeUnit.MILLISECONDS.sleep(Integer.parseInt(ParseText(args[1])));
