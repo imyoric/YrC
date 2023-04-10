@@ -39,7 +39,7 @@ public class YrC {
         addFunc("if", new OnFunction() {
             @Override
             public void onFunc(String[] argss) {
-                if(argss.length == 5){
+                if(argss.length <= 5){
                     if(argss[2].equals("==")){
                         if(ParseText(argss[1]).equals(ParseText(argss[3]))) IFFunc(argss);
                     }else if(argss[2].equals("!=")){
