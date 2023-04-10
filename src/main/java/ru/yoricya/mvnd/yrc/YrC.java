@@ -36,7 +36,7 @@ public class YrC {
                 System.out.println(prs);
             }
         });
-        GLOB.put("if", new OnFunction() {
+        addFunc("if", new OnFunction() {
             @Override
             public void onFunc(String[] argss) {
                 if(argss.length == 5){
@@ -117,6 +117,7 @@ public class YrC {
         });
     }
     private void IFFunc(String[] argss){
+        System.out.println(Arrays.toString(argss));
         if(argss[4].equals("cast")){
             OnFunction rn = (OnFunction) GLOB.get(argss[5]);
             StringBuilder newArgs = new StringBuilder();
