@@ -204,7 +204,11 @@ public class YrC {
                 if(GLOB.get(args[0]) != null){
                     try{
                         OnFunction rn = (OnFunction) GLOB.get(args[0]);
-                        if(!rn.onFunc(args)) return false;
+                        boolean as = rn.onFunc(args);
+                        System.out.println(as);
+                        if(!as){
+                            return false;
+                        }
                     }catch (Exception e){
                         if(args.length == 1) {
                             System.out.println(GLOB.get(args[0]));
