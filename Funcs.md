@@ -31,6 +31,11 @@ print a
 net_get_contents "https://google.com" a
 print a
 ```
+## How to unset variable?
+```
+a = "123"
+delete a
+```
 ## How to use IF?
 ```
 new Function ifTrue
