@@ -3,13 +3,14 @@
   <groupId>ru.yoricya.mvnd.yrc</groupId>
   <artifactId>YrC</artifactId>
   <versioning>
-    <release>0.1.b2.2</release>
+    <release>0.1.b2.3</release>
     <versions>
       <version>0.1.1</version>
       <version>0.1.2</version>
       <version>0.1.b2.1</version>
       <version>0.1.b2.2</version>
+      <version>0.1.b2.3</version>
     </versions>
-    <lastUpdated>20230410152819</lastUpdated>
+    <lastUpdated>20230410153128</lastUpdated>
   </versioning>
 </metadata>

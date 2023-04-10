@@ -39,7 +39,7 @@ public class YrC {
         addFunc("if", new OnFunction() {
             @Override
             public void onFunc(String[] argss) {
-                if(argss.length <= 5){
+                if(argss.length >= 5){
                     if(argss[2].equals("==")){
                         if(ParseText(argss[1]).equals(ParseText(argss[3]))) IFFunc(argss);
                     }else if(argss[2].equals("!=")){
@@ -306,7 +306,7 @@ public class YrC {
         return true;
     }
     public void printErr(String err){
-        System.err.println("Ошибка! '" + args[1] + ":" + read + "' - "+err);
+        System.err.println("Ошибка! '" + args[0] + ":" + read + "' - "+err);
     }
     public void addFunc(String name , OnFunction func){
         GLOB.put(name, func);
