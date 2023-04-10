@@ -55,7 +55,7 @@ b = "2"
 if a == b cast print "yes"
 if a != b cast print "no"
 ```
-* **`cast` - Allow only to functions!**
+* **`cast` - Allowed only to functions!**
 
 ## What /SP - /RE?
 /RE = "/n" (Return symbols)
