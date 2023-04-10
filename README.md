@@ -59,6 +59,9 @@ new Function ifFalse
 -print "Nea! Its False"
 END.ifTrue
 
+a = "1"
+b = "2"
+
 if a == b cast ifTrue
 if a != b cast ifFalse
 ```
