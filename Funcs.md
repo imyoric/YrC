@@ -90,7 +90,19 @@ new Function myfunc
 -print "This/SPis/SPmy/SPfunction!"
 END.myfunc
 ```
+or
+```
+new Function myfunc
+print myfunc.args.length
+print myfunc.args.0
+print myfunc.args.1
+END.myfunc
+```
 ### How to cast my function?
 ```
 myfunc
+```
+or
+```
+myfunc "arg1" "arg2"
 ```
