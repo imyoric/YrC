@@ -26,10 +26,6 @@ print "123"
 a = "123"
 print a
 ```
-## How to get current YrC Version?
-```
-print YrC.ver
-```
 ## How to parse http(s)?
 ```
 net_get_contents "https://google.com" a
