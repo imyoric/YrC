@@ -21,5 +21,5 @@
   </dependency>
 </dependencies>
 ```
-# How to use?
+# For YrC Developers:
 * Check: [All Methods and Functions](Funcs.md)
