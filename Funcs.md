@@ -31,8 +31,7 @@ print a
 net_get_contents "https://google.com" a
 print a
 ```
-## How to use IF?(Coming soon.)
-* This is coming soon! And so Methods can change!
+## How to use IF?
 ```
 new Function ifTrue
 -print "TRUE!"
@@ -48,6 +47,15 @@ b = "2"
 if a == b cast ifTrue
 if a != b cast ifFalse
 ```
+or
+```
+a = "1"
+b = "2"
+
+if a == b cast print "yes"
+if a != b cast print "no"
+```
+**`cast` Only allow to functions!**
 ## What /SP - /RE?
 /RE = "/n" (Return symbols)
 
@@ -65,7 +73,3 @@ END.myfunc
 ```
 myfunc
 ```
-# Coming soon...
-## Where IF?
-* Not yet, coming soon
-
