@@ -112,9 +112,6 @@ public class YrC {
                 GLOB.put(var, new OnFunction() {
                     @Override
                     public void onFunc(String[] args) {
-                        for(int i = 0; i != args.length ; i++){
-                            setVar(var+".args."+i, ParseText(args[i]));
-                        }
                         YrC y = new YrC();
                         y.GLOBCONSTR = GLOBCONSTR;
                         y.GLOB = GLOB;
