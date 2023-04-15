@@ -20,17 +20,20 @@ b = "1"
 strCat a and b to a
 print a
 ```
+_Output: Count:1_
 ## How to print?
 ```
 print "123"
 a = "123"
 print a
 ```
+_Output: 123(\n)123_
 ## How to parse http(s)?
 ```
 net_get_contents "https://google.com" a
 print a
 ```
+_Output: Абсолютно хз че он выдаст_
 ## How to unset variable?
 ```
 a = "123"
@@ -67,6 +70,7 @@ b = "2"
 if a == b cast ifTrue
 if a != b cast ifFalse
 ```
+_Output: Nea! Its False_
 or
 ```
 a = "1"
@@ -75,6 +79,7 @@ b = "2"
 if a == b cast print "yes"
 if a != b cast print "no"
 ```
+_Output: no_
 * **`cast` - Allowed only to functions!**
 
 ## What /SP - /RE?

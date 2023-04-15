@@ -11,15 +11,23 @@ import java.util.concurrent.TimeUnit;
 
 public class YrC {
     public String[] scrm;
+    public String AppName;
     public String scr = "";
     public int read = 0;
     public String[] args;
     public HashMap<String, Object> GLOB = new HashMap<>();
     public HashMap<String, Object> GLOBCONSTR = new HashMap<>();
-    public YrC(){
+    public YrC(YrC yrc){
+        GLOB = yrc.GLOB;
+        AppName = yrc.AppName;
+        GLOBCONSTR = yrc.GLOBCONSTR;
+    }
+    public YrC(String appname){
+        AppName = appname;
         GLOB.put("END", "");
-        GLOB.put("YrC.ver", "1.1/Beta");
-        GLOB.put("YrC.codeVer", "002");
+        GLOB.put("YrC.ver", "1.3/Beta");
+        GLOB.put("YrC.codeVer", "003");
+        GLOB.put("YrC.AppName", AppName);
         GLOB.put("print", new OnFunction() {
             @Override
             public boolean onFunc(String[] argsg) {
@@ -54,6 +62,26 @@ public class YrC {
                         if(Long.parseLong(ParseText(argss[1])) >= Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
                     }else if(argss[2].equals("<=")){
                         if(Long.parseLong(ParseText(argss[1])) <= Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
+                    }else{
+                        printErr("Не известный оператор!");
+                    }
+                    return ret;
+                }else{
+                    printErr("Не все аргументы указаны!");
+                }
+                return true;
+            }
+        });
+        addFunc("ifset", new OnFunction() {
+            @Override
+            public boolean onFunc(String[] argss) {
+                if(argss.length >= 5){
+                    boolean isset = ParseText(argss[1]) != null;
+                    boolean ret = true;
+                    if(argss[2].equals("==")){
+                        if(isset == Boolean.parseBoolean(ParseText(argss[3]))) ret = IFFunc(argss);
+                    }else if(argss[2].equals("!=")) {
+                        if(isset != Boolean.parseBoolean(ParseText(argss[3]))) ret = IFFunc(argss);
                     }else{
                         printErr("Не известный оператор!");
                     }
@@ -135,28 +163,68 @@ public class YrC {
                 return true;
             }
         });
+        addFunc("var", new OnFunction() {
+            @Override
+            public boolean onFunc(String[] str) {
+                try {
+                    if (str.length < 4) {
+                        printErr("Не все аргументы указаны");
+                    } else if (str[2].equals("=")) {
+                        GLOB.put(str[1], ParseText(str[3]));
+                    } else if (str[2].equals("+=")) {
+                        int a = Integer.parseInt(ParseText(str[1]));
+                        a+= Integer.parseInt(ParseText(str[3]));
+                        setVar(str[1], String.valueOf(a));
+                    } else if (str[2].equals("-=")) {
+                        int a = Integer.parseInt(ParseText(str[1]));
+                        a-= Integer.parseInt(ParseText(str[3]));
+                        setVar(str[1], String.valueOf(a));
+                    } else if (str[2].equals("/=")) {
+                        int a = Integer.parseInt(ParseText(str[1]));
+                        a/= Integer.parseInt(ParseText(str[3]));
+                        setVar(str[1], String.valueOf(a));
+                    } else if (str[2].equals("*=")) {
+                        int a = Integer.parseInt(ParseText(str[1]));
+                        a*= Integer.parseInt(ParseText(str[3]));
+                        setVar(str[1], String.valueOf(a));
+                    }else{
+                        printErr("Неизвестный тип операции.");
+                    }
+                }catch (Exception e){
+                    printErr("Internal Error");
+                }
+                return true;
+            }
+        });
         GLOBCONSTR.put("Function", new OnConstructor() {
             @Override
             public void onConstr(String var, String scr) {
                 GLOB.put(var, new OnFunction() {
                     @Override
                     public boolean onFunc(String[] args) {
-                        YrC y = new YrC();
-                        y.GLOBCONSTR = GLOBCONSTR;
-                        y.GLOB = GLOB;
+                        YrC y = new YrC(getThis());
                         for(int i = 1; i != args.length ; i++){
                             y.setVar(var+".args."+(i-1), y.ParseText(args[i]));
+                            y.setVar("this.args."+(i-1), y.ParseText(args[i]));
                         }
                         y.setVar(var+".args.length", String.valueOf(args.length - 1));
+                        y.setVar("this.args.length", String.valueOf(args.length - 1));
                         y.parse(scr);
-                        GLOB = y.GLOB;
-                        GLOBCONSTR = y.GLOBCONSTR;
+                        initGlobs(y);
                         return true;
                     }
                 });
             }
         });
     }
+    public void initGlobs(YrC yrc){
+        Object thi = GLOB.get("this");
+        //Надо сделац нормальный зис
+        GLOB = yrc.GLOB;
+        GLOB.put("this", thi);
+        GLOBCONSTR = yrc.GLOBCONSTR;
+    }
+
     private boolean IFFunc(String[] argss){
         if(argss[4].equals("cast")){
             OnFunction rn = (OnFunction) GLOB.get(argss[5]);
@@ -165,6 +233,8 @@ public class YrC {
                 newArgs.append(" ").append(argss[i]);
             }
             return rn.onFunc(newArgs.toString().split(" "));
+        }else if(argss[4].equals("to")){
+            setVar(argss[5], "true");
         }else printErr("Ожидается тип: cast");
         return true;
     }
