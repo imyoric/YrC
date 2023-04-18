@@ -13,7 +13,6 @@ public class YrC {
     public String[] scrm;
     public String scr = "";
     public int read = 0;
-    public String CriticalMessage;
     public String[] args;
     public HashMap<String, Object> GLOB = new HashMap<>();
     public HashMap<String, Object> GLOBCONSTR = new HashMap<>();
@@ -23,7 +22,7 @@ public class YrC {
         GLOB.put("YrC.codeVer", "003");
         GLOB.put("print", new OnFunction() {
             @Override
-            public Req onFunc(String[] argsg, Req req) {
+            public boolean onFunc(String[] argsg) {
                 String prs = ParseText(Arrays.toString(argsg).replace(",", ""));
                 argsg[1] = argsg[1].replace(" ", "");
                 if(prs == null){
@@ -31,44 +30,43 @@ public class YrC {
                         prs = GLOB.get(argsg[1]).toString();
                     }
                     else{
-                        req.CriticalMessage = "Значение не установлено!";
+                        System.err.println("Ошибка! Print Error! '" + argsg[1] + ":" + read + "' - Значение не установленно!");
                     }
                 }
                 System.out.println(prs);
-                return req;
+                return true;
             }
         });
         addFunc("if", new OnFunction() {
             @Override
-            public Req onFunc(String[] argss, Req req) {
+            public boolean onFunc(String[] argss) {
                 if(argss.length >= 5){
-                    Req ret = req;
+                    boolean ret = true;
                     if(argss[2].equals("==")){
-                        if(ParseText(argss[1]).equals(ParseText(argss[3]))) ret = IFFunc(argss, req);
+                        if(ParseText(argss[1]).equals(ParseText(argss[3]))) ret = IFFunc(argss);
                     }else if(argss[2].equals("!=")){
-                        if(!ParseText(argss[1]).equals(ParseText(argss[3]))) ret = IFFunc(argss, req);
+                        if(!ParseText(argss[1]).equals(ParseText(argss[3]))) ret = IFFunc(argss);
                     }else if(argss[2].equals(">")){
-                        if(Long.parseLong(ParseText(argss[1])) > Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss, req);
+                        if(Long.parseLong(ParseText(argss[1])) > Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
                     }else if(argss[2].equals("<")){
-                        if(Long.parseLong(ParseText(argss[1])) < Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss, req);
+                        if(Long.parseLong(ParseText(argss[1])) < Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
                     }else if(argss[2].equals(">=")){
-                        if(Long.parseLong(ParseText(argss[1])) >= Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss, req);
+                        if(Long.parseLong(ParseText(argss[1])) >= Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
                     }else if(argss[2].equals("<=")){
-                        if(Long.parseLong(ParseText(argss[1])) <= Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss, req);
+                        if(Long.parseLong(ParseText(argss[1])) <= Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
                     }else{
-                        req.CriticalMessage = "Не известный оператор!";
+                        printErr("Не известный оператор!");
                     }
-                    req = req;
-                    return req;
+                    return ret;
                 }else{
-                    req.CriticalMessage = "Не все аргументы указаны!";
+                    printErr("Не все аргументы указаны!");
                 }
-                return req;
+                return true;
             }
         });
         GLOB.put("new", new OnFunction() {
             @Override
-            public Req onFunc(String[] args, Req req) {
+            public boolean onFunc(String[] args) {
                 if((OnConstructor) GLOBCONSTR.get(args[1])!=null){
                     GLOB.put("END."+args[2], "");
                     OnConstructor f= (OnConstructor)GLOBCONSTR.get(args[1]);
@@ -82,79 +80,59 @@ public class YrC {
                     f.onConstr(args[2],finalScrp);
                 }else{
                     System.err.println("Ошибка! '"+args[0]+ ":"+read+"' - Такой конструкции не существует!");
-                    req.onCritical = true;
-                    req.CriticalMessage = "Конструкция не существует";
                 }
-                return req;
+                return true;
             }
         });
         GLOB.put("net_get_contents", new OnFunction() {
             @Override
-            public Req onFunc(String[] args, Req req) {
+            public boolean onFunc(String[] args) {
                 if(args.length > 2) {
                     GLOB.put(args[2],NetGetContents(ParseText(args[1])));
                 }else{
-                    req.CriticalMessage = "Произошла ошибка";
+                    printErr("Ошибка");
                 }
-                return req;
+                return true;
             }
         });
         addFunc("strCat", new OnFunction() {
             @Override
-            public Req onFunc(String[] str, Req req) {
+            public boolean onFunc(String[] str) {
                 if(str.length >= 5){
                     String a = ParseText(str[1]) + ParseText(str[3]);
                     setVar(str[5], a);
-                }else req.CriticalMessage = "Не все аргументы указаны!";
-                return req;
+                }else printErr("Не все аргументы указаны!");
+                return true;
             }
         });
         addFunc("delete", new OnFunction() {
             @Override
-            public Req onFunc(String[] str, Req req) {
+            public boolean onFunc(String[] str) {
                 if(str.length == 2){
                     GLOB.remove(str[1]);
-                }else req.CriticalMessage = "Синтаксическая ошибка";
-                return req;
+                }else printErr("Синтаксическая ошибка");
+                return true;
             }
         });
         addFunc("return", new OnFunction() {
             @Override
-            public Req onFunc(String[] str, Req req) {
+            public boolean onFunc(String[] str) {
                 if(str.length == 2){
-                    req.onReturn = Boolean.parseBoolean(ParseText(str[1]));
-                    return req;
+                    return Boolean.parseBoolean(ParseText(str[1]));
                 }else {
-                    req.onReturn = true;
-                    return req;
+                    return false;
                 }
             }
         });
         addFunc("exit", new OnFunction() {
             @Override
-            public Req onFunc(String[] str, Req req) {
+            public boolean onFunc(String[] str) {
                 if(str.length == 2){
                     System.exit(Integer.parseInt(ParseText(str[1])));
                 }else {
                     System.exit(0);
                 }
-                return req;
-            }
-        });
-        addFunc("final", new OnFunction() {
-            @Override
-            public Req onFunc(String[] args, Req req) {
-                if(args.length < 3){
-                    req.CriticalMessage = "Не все аргументы указаны";
-                    return req;
-                }else if(((Final) GLOB.get(args[1])) != null){
-                    req.CriticalMessage = "FINAL - Переменная уже инициализирована";
-                    req.onCritical = true;
-                    return req;
-                }
-                Final a = new YrC.Final(ParseText(args[3]));
-                GLOB.put(args[1], a);
-                return req;
+                return true;
             }
         });
         GLOBCONSTR.put("Function", new OnConstructor() {
@@ -179,7 +157,6 @@ public class YrC {
             }
         });
     }
-
     private Req IFFunc(String[] argss, Req req){
         if(argss[4].equals("cast")){
             OnFunction rn = (OnFunction) GLOB.get(argss[5]);
@@ -196,7 +173,7 @@ public class YrC {
         return this;
     }
     public interface OnFunction {
-        Req onFunc(String[] args, Req req);
+        boolean onFunc(String[] args);
     }
     public interface OnConstructor {
         void onConstr(String var, String cmds);
@@ -216,24 +193,8 @@ public class YrC {
             return null;
         }
     }
-    public boolean parse(String scr){
-        Req req = parseToReq(scr);
-        if(req.onCritical){
-            printErr(req.CriticalMessage);
-        }else{
-            return true;
-        }
-        return false;
-    }
-    public Req parse(String scr, Req req){
-        req = parseToReq(scr);
-        if(req.onCritical) {
-            printErr(req.CriticalMessage);
-        }
-        return req;
-    }
-    public Req parseToReq(String scro){
-        Req req = null;
+
+    public boolean parse(String scro){
         scr = scro;
         try{
             scrm = scr.split("\n");
@@ -249,23 +210,19 @@ public class YrC {
                 else
                 if(GLOB.get(args[0]) != null){
                     try{
-                        req = new Req();
                         OnFunction rn = (OnFunction) GLOB.get(args[0]);
-                        Req as = rn.onFunc(args, req);
-                        if (as.onCritical) {
-                            CriticalMessage = as.CriticalMessage;
-                            return req;
-                        } else if (as.onReturn) return req;
-                    }catch (ClassCastException e){
-                        e.printStackTrace();
-                    }catch (Exception e) {
-                        printErr("Внутренняя ошибка");
-                        e.printStackTrace();
+                        boolean as = rn.onFunc(args);
+                        if(!as){
+                            return false;
+                        }
+                    }catch (Exception e){
+                        if(args.length == 1) {
+                            System.out.println(GLOB.get(args[0]));
+                        }
                     }
                 }else if(args.length == 1){
                     System.err.println("Ошибка! '"+args[0]+ ":"+read+"' - Переменная/Функция не инициализирована!");
                 }
-                //printErr(args.length);
                 if(args.length > 1 && args[1].equals("=")){
                     String prs = ParseText(Arrays.toString(args).replace(",", ""));
                     if(prs == null) {
@@ -316,7 +273,7 @@ public class YrC {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return req;
+        return true;
     }
     public boolean parseOnly(String scrm){
 
@@ -331,14 +288,14 @@ public class YrC {
             }
             else
             if(GLOB.get(args[0]) != null){
-//                try{
-//                    OnFunction rn = (OnFunction) GLOB.get(args[0]);
-//                    rn.onFunc(args);
-//                }catch (Exception e){
-//                    if(args.length == 1) {
-//                        System.out.println(GLOB.get(args[0]));
-//                    }
-//                }
+                try{
+                    OnFunction rn = (OnFunction) GLOB.get(args[0]);
+                    rn.onFunc(args);
+                }catch (Exception e){
+                    if(args.length == 1) {
+                        System.out.println(GLOB.get(args[0]));
+                    }
+                }
             }else if(args.length == 1){
                 System.err.println("Ошибка! '"+args[0]+ ":"+read+"' - Переменная/Функция не инициализирована!");
             }
@@ -391,21 +348,6 @@ public class YrC {
             e.printStackTrace();
         }
         return true;
-    }
-    public static class Final{
-        public Object value = "";
-        Final(Object valu){
-            this.value = valu;
-        }
-        @Override
-        public String toString() {
-            return value.toString();
-        }
-    }
-    public static class Req{
-        boolean onCritical = false;
-        boolean onReturn = false;
-        String CriticalMessage = "";
     }
     public void printErr(String err){
         System.err.println("Ошибка! '" + args[1] + ":" + read + "' - "+err);
