@@ -25,20 +25,19 @@ public class YrC {
     public YrC(String appname){
         AppName = appname;
         GLOB.put("END", "");
-        GLOB.put("YrC.ver", "1.3/Beta");
-        GLOB.put("YrC.codeVer", "003");
+        GLOB.put("YrC.ver", "1.3.2/Beta");
+        GLOB.put("YrC.codeVer", "005");
         GLOB.put("YrC.AppName", AppName);
         GLOB.put("print", new OnFunction() {
             @Override
-            public boolean onFunc(String[] argsg) {
-                String prs = ParseText(Arrays.toString(argsg).replace(",", ""));
-                argsg[1] = argsg[1].replace(" ", "");
+            public boolean onFunc(String[] argsg, YrC yrc) {
+                String prs = yrc.ParseText(argsg[1]);
                 if(prs == null){
-                    if(GLOB.get(argsg[1]) != null){
-                        prs = GLOB.get(argsg[1]).toString();
+                    if(yrc.GLOB.get(argsg[1]) != null){
+                        prs = yrc.GLOB.get(argsg[1]).toString();
                     }
                     else{
-                        System.err.println("Ошибка! Print Error! '" + argsg[1] + ":" + read + "' - Значение не установленно!");
+                        System.err.println("Ошибка! Print Error! '" + argsg[1] + ":" + yrc.read + "' - Значение не установленно!");
                     }
                 }
                 System.out.println(prs);
@@ -47,151 +46,162 @@ public class YrC {
         });
         addFunc("if", new OnFunction() {
             @Override
-            public boolean onFunc(String[] argss) {
+            public boolean onFunc(String[] argss, YrC yrc) {
                 if(argss.length >= 5){
                     boolean ret = true;
                     if(argss[2].equals("==")){
-                        if(ParseText(argss[1]).equals(ParseText(argss[3]))) ret = IFFunc(argss);
+                        if(yrc.ParseText(argss[1]).equals(yrc.ParseText(argss[3]))) ret = yrc.IFFunc(argss);
                     }else if(argss[2].equals("!=")){
-                        if(!ParseText(argss[1]).equals(ParseText(argss[3]))) ret = IFFunc(argss);
+                        if(!yrc.ParseText(argss[1]).equals(yrc.ParseText(argss[3]))) ret = yrc.IFFunc(argss);
                     }else if(argss[2].equals(">")){
-                        if(Long.parseLong(ParseText(argss[1])) > Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
+                        if(Long.parseLong(yrc.ParseText(argss[1])) > Long.parseLong(yrc.ParseText(argss[3]))) ret = yrc.IFFunc(argss);
                     }else if(argss[2].equals("<")){
-                        if(Long.parseLong(ParseText(argss[1])) < Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
+                        if(Long.parseLong(yrc.ParseText(argss[1])) < Long.parseLong(yrc.ParseText(argss[3]))) ret = yrc.IFFunc(argss);
                     }else if(argss[2].equals(">=")){
-                        if(Long.parseLong(ParseText(argss[1])) >= Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
+                        if(Long.parseLong(yrc.ParseText(argss[1])) >= Long.parseLong(yrc.ParseText(argss[3]))) ret = yrc.IFFunc(argss);
                     }else if(argss[2].equals("<=")){
-                        if(Long.parseLong(ParseText(argss[1])) <= Long.parseLong(ParseText(argss[3]))) ret = IFFunc(argss);
+                        if(Long.parseLong(yrc.ParseText(argss[1])) <= Long.parseLong(yrc.ParseText(argss[3]))) ret = yrc.IFFunc(argss);
                     }else{
-                        printErr("Не известный оператор!");
+                        yrc.printErr("Не известный оператор!");
                     }
                     return ret;
                 }else{
-                    printErr("Не все аргументы указаны!");
+                    yrc.printErr("Не все аргументы указаны!");
                 }
                 return true;
             }
         });
         addFunc("ifset", new OnFunction() {
             @Override
-            public boolean onFunc(String[] argss) {
+            public boolean onFunc(String[] argss, YrC yrc) {
                 if(argss.length >= 5){
-                    boolean isset = ParseText(argss[1]) != null;
+                    boolean isset = yrc.ParseText(argss[1]) != null;
                     boolean ret = true;
                     if(argss[2].equals("==")){
-                        if(isset == Boolean.parseBoolean(ParseText(argss[3]))) ret = IFFunc(argss);
+                        if(isset == Boolean.parseBoolean(yrc.ParseText(argss[3]))) ret = yrc.IFFunc(argss);
                     }else if(argss[2].equals("!=")) {
-                        if(isset != Boolean.parseBoolean(ParseText(argss[3]))) ret = IFFunc(argss);
+                        if(isset != Boolean.parseBoolean(yrc.ParseText(argss[3]))) ret = yrc.IFFunc(argss);
                     }else{
-                        printErr("Не известный оператор!");
+                        yrc.printErr("Не известный оператор!");
                     }
                     return ret;
                 }else{
-                    printErr("Не все аргументы указаны!");
+                    yrc.printErr("Не все аргументы указаны!");
                 }
                 return true;
             }
         });
         GLOB.put("new", new OnFunction() {
             @Override
-            public boolean onFunc(String[] args) {
-                if((OnConstructor) GLOBCONSTR.get(args[1])!=null){
-                    GLOB.put("END."+args[2], "");
-                    OnConstructor f= (OnConstructor)GLOBCONSTR.get(args[1]);
-                    read+=1;
+            public boolean onFunc(String[] args, YrC yrc) {
+                if((OnConstructor) yrc.GLOBCONSTR.get(args[1])!=null){
+                    yrc.GLOB.put("END."+args[2], "");
+                    OnConstructor f= (OnConstructor) yrc.GLOBCONSTR.get(args[1]);
+                    yrc.read+=1;
                     StringBuilder scrp = new StringBuilder();
-                    while (!scrm[read].equals("END."+args[2])) {
-                        scrp.append(scrm[read]).append("\n");
-                        read+=1;
+                    while (!yrc.scrm[read].equals("END."+args[2])) {
+                        scrp.append(yrc.scrm[read]).append("\n");
+                        yrc.read+=1;
                     }
                     String finalScrp = scrp.toString();
                     f.onConstr(args[2],finalScrp);
                 }else{
-                    System.err.println("Ошибка! '"+args[0]+ ":"+read+"' - Такой конструкции не существует!");
+                    System.err.println("Ошибка! '"+args[0]+ ":"+yrc.read+"' - Такой конструкции не существует!");
                 }
                 return true;
             }
         });
         GLOB.put("net_get_contents", new OnFunction() {
             @Override
-            public boolean onFunc(String[] args) {
+            public boolean onFunc(String[] args, YrC yrc) {
                 if(args.length > 2) {
-                    GLOB.put(args[2],NetGetContents(ParseText(args[1])));
+                    yrc.GLOB.put(args[2], yrc.NetGetContents(yrc.ParseText(args[1])));
                 }else{
-                    printErr("Ошибка");
+                    yrc.printErr("Ошибка");
                 }
                 return true;
             }
         });
         addFunc("strCat", new OnFunction() {
             @Override
-            public boolean onFunc(String[] str) {
+            public boolean onFunc(String[] str, YrC yrc) {
                 if(str.length >= 5){
-                    String a = ParseText(str[1]) + ParseText(str[3]);
-                    setVar(str[5], a);
-                }else printErr("Не все аргументы указаны!");
+                    String a = yrc.ParseText(str[1]) + yrc.ParseText(str[3]);
+                    yrc.setVar(str[5], a);
+                }else yrc.printErr("Не все аргументы указаны!");
                 return true;
             }
         });
         addFunc("delete", new OnFunction() {
             @Override
-            public boolean onFunc(String[] str) {
+            public boolean onFunc(String[] str, YrC yrc) {
                 if(str.length == 2){
-                    GLOB.remove(str[1]);
-                }else printErr("Синтаксическая ошибка");
+                    yrc.GLOB.remove(str[1]);
+                }else yrc.printErr("Синтаксическая ошибка");
                 return true;
             }
         });
         addFunc("return", new OnFunction() {
             @Override
-            public boolean onFunc(String[] str) {
-                if(str.length == 2){
-                    return Boolean.parseBoolean(ParseText(str[1]));
-                }else {
+            public boolean onFunc(String[] str, YrC yrc) {
+                try {
+                    if (str.length == 2) {
+                        return Boolean.parseBoolean(yrc.ParseText(str[1]));
+                    } else {
+                        return false;
+                    }
+                }catch(Exception ignore){
+                    yrc.printErr("");
                     return false;
                 }
             }
         });
         addFunc("exit", new OnFunction() {
             @Override
-            public boolean onFunc(String[] str) {
-                if(str.length == 2){
-                    System.exit(Integer.parseInt(ParseText(str[1])));
-                }else {
-                    System.exit(0);
+            public boolean onFunc(String[] str, YrC yrc) {
+                try {
+                    if (str.length == 2) {
+                        System.exit(Integer.parseInt(yrc.ParseText(str[1])));
+                    } else {
+                        System.exit(0);
+                    }
+                    return true;
                 }
-                return true;
+                catch (Exception e){
+                    yrc.printErr("");
+                    return false;
+                }
             }
         });
         addFunc("var", new OnFunction() {
             @Override
-            public boolean onFunc(String[] str) {
+            public boolean onFunc(String[] str, YrC yrc) {
                 try {
                     if (str.length < 4) {
-                        printErr("Не все аргументы указаны");
+                        yrc.printErr("Не все аргументы указаны");
                     } else if (str[2].equals("=")) {
-                        GLOB.put(str[1], ParseText(str[3]));
+                        yrc.GLOB.put(str[1], yrc.ParseText(str[3]));
                     } else if (str[2].equals("+=")) {
-                        int a = Integer.parseInt(ParseText(str[1]));
-                        a+= Integer.parseInt(ParseText(str[3]));
-                        setVar(str[1], String.valueOf(a));
+                        int a = Integer.parseInt(yrc.ParseText(str[1]));
+                        a+= Integer.parseInt(yrc.ParseText(str[3]));
+                        yrc.setVar(str[1], String.valueOf(a));
                     } else if (str[2].equals("-=")) {
-                        int a = Integer.parseInt(ParseText(str[1]));
-                        a-= Integer.parseInt(ParseText(str[3]));
-                        setVar(str[1], String.valueOf(a));
+                        int a = Integer.parseInt(yrc.ParseText(str[1]));
+                        a-= Integer.parseInt(yrc.ParseText(str[3]));
+                        yrc.setVar(str[1], String.valueOf(a));
                     } else if (str[2].equals("/=")) {
-                        int a = Integer.parseInt(ParseText(str[1]));
-                        a/= Integer.parseInt(ParseText(str[3]));
-                        setVar(str[1], String.valueOf(a));
+                        int a = Integer.parseInt(yrc.ParseText(str[1]));
+                        a/= Integer.parseInt(yrc.ParseText(str[3]));
+                        yrc.setVar(str[1], String.valueOf(a));
                     } else if (str[2].equals("*=")) {
-                        int a = Integer.parseInt(ParseText(str[1]));
-                        a*= Integer.parseInt(ParseText(str[3]));
-                        setVar(str[1], String.valueOf(a));
+                        int a = Integer.parseInt(yrc.ParseText(str[1]));
+                        a*= Integer.parseInt(yrc.ParseText(str[3]));
+                        yrc.setVar(str[1], String.valueOf(a));
                     }else{
-                        printErr("Неизвестный тип операции.");
+                        yrc.printErr("Неизвестный тип операции.");
                     }
                 }catch (Exception e){
-                    printErr("Internal Error");
+                    yrc.printErr("Internal Error");
                 }
                 return true;
             }
@@ -201,8 +211,9 @@ public class YrC {
             public void onConstr(String var, String scr) {
                 GLOB.put(var, new OnFunction() {
                     @Override
-                    public boolean onFunc(String[] args) {
-                        YrC y = new YrC(getThis());
+                    public boolean onFunc(String[] args, YrC yrc) {
+                        YrC y = new YrC(appname);
+                        y.GLOB = yrc.GLOB;
                         for(int i = 1; i != args.length ; i++){
                             y.setVar(var+".args."+(i-1), y.ParseText(args[i]));
                             y.setVar("this.args."+(i-1), y.ParseText(args[i]));
@@ -210,20 +221,20 @@ public class YrC {
                         y.setVar(var+".args.length", String.valueOf(args.length - 1));
                         y.setVar("this.args.length", String.valueOf(args.length - 1));
                         y.parse(scr);
-                        initGlobs(y);
+                        yrc.GLOB = y.GLOB;
                         return true;
                     }
                 });
             }
         });
     }
-    public void initGlobs(YrC yrc){
-        Object thi = GLOB.get("this");
-        //Надо сделац нормальный зис
-        GLOB = yrc.GLOB;
-        GLOB.put("this", thi);
-        GLOBCONSTR = yrc.GLOBCONSTR;
-    }
+//    public void initGlobs(YrC yrc){
+////        Object thi = GLOB.get("this");
+////        //Надо сделац нормальный зис
+////        GLOB = yrc.GLOB;
+////        GLOB.put("this", thi);
+////        GLOBCONSTR = yrc.GLOBCONSTR;
+//    }
 
     private boolean IFFunc(String[] argss){
         if(argss[4].equals("cast")){
@@ -232,7 +243,7 @@ public class YrC {
             for(int i = 6; i != argss.length; i+=1){
                 newArgs.append(" ").append(argss[i]);
             }
-            return rn.onFunc(newArgs.toString().split(" "));
+            return rn.onFunc(newArgs.toString().split(" "), this);
         }else if(argss[4].equals("to")){
             setVar(argss[5], "true");
         }else printErr("Ожидается тип: cast");
@@ -243,7 +254,7 @@ public class YrC {
         return this;
     }
     public interface OnFunction {
-        boolean onFunc(String[] args);
+        boolean onFunc(String[] args, YrC yrc);
     }
     public interface OnConstructor {
         void onConstr(String var, String cmds);
@@ -281,7 +292,7 @@ public class YrC {
                 if(GLOB.get(args[0]) != null){
                     try{
                         OnFunction rn = (OnFunction) GLOB.get(args[0]);
-                        boolean as = rn.onFunc(args);
+                        boolean as = rn.onFunc(args, this);
                         if(!as){
                             return false;
                         }
@@ -297,44 +308,44 @@ public class YrC {
                     String prs = ParseText(Arrays.toString(args).replace(",", ""));
                     if(prs == null) {
                         System.err.println("Ошибка! textParse Error! '" + args[0] + ":" + read + "'");
-                        continue;
+                        return false;
                     }
                     GLOB.put(args[0], prs);
                 } else if(args.length > 2 && args[1].equals("+=")){
                     String prs = ParseText(Arrays.toString(args).replace(",", ""));
                     if(prs == null) {
                         System.err.println("Ошибка! textParse Error! '" + args[0] + ":" + read + "'");
-                        continue;
+                        return false;
                     }
-                    int a = Integer.parseInt((String) GLOB.get(args[0]));
+                    int a = Integer.parseInt(String.valueOf(GLOB.get(args[0])));
                     a += Integer.parseInt(ParseText(args[2]));
                     GLOB.put(args[0], a);
                 } else if(args.length > 2 && args[1].equals("-=")) {
                     String prs = ParseText(Arrays.toString(args).replace(",", ""));
                     if (prs == null) {
                         System.err.println("Ошибка! textParse Error! '" + args[0] + ":" + read + "'");
-                        continue;
+                        return false;
                     }
-                    int a = Integer.parseInt((String) GLOB.get(args[0]));
+                    int a = Integer.parseInt(String.valueOf(GLOB.get(args[0])));
                     a -= Integer.parseInt(ParseText(args[2]));
                     GLOB.put(args[0], a);
                 } else if(args.length > 2 && args[1].equals("*=")) {
                     String prs = ParseText(Arrays.toString(args).replace(",", ""));
                     if (prs == null) {
                         System.err.println("Ошибка! textParse Error! '" + args[0] + ":" + read + "'");
-                        continue;
+                        return false;
                     }
                     //System.out.println(args[0]);
-                    int a = Integer.parseInt((String) GLOB.get(args[0]));
+                    int a = Integer.parseInt(String.valueOf(GLOB.get(args[0])));
                     a *= Integer.parseInt(ParseText(args[2]));
                     GLOB.put(args[0], a);
                 } else if(args.length > 2 && args[1].equals("/=")) {
                     String prs = ParseText(Arrays.toString(args).replace(",", ""));
                     if (prs == null) {
                         System.err.println("Ошибка! textParse Error! '" + args[0] + ":" + read + "'");
-                        continue;
+                        return false;
                     }
-                    int a = Integer.parseInt((String) GLOB.get(args[0]));
+                    int a = Integer.parseInt(String.valueOf(GLOB.get(args[0])));
                     a /= Integer.parseInt(ParseText(args[2]));
                     GLOB.put(args[0], a);
                 }
@@ -360,7 +371,7 @@ public class YrC {
             if(GLOB.get(args[0]) != null){
                 try{
                     OnFunction rn = (OnFunction) GLOB.get(args[0]);
-                    rn.onFunc(args);
+                    rn.onFunc(args, this);
                 }catch (Exception e){
                     if(args.length == 1) {
                         System.out.println(GLOB.get(args[0]));
@@ -382,7 +393,7 @@ public class YrC {
                     System.err.println("Ошибка! textParse Error! '" + args[0] + ":" + read + "'");
                     return false;
                 }
-                int a = Integer.parseInt((String) GLOB.get(args[0]));
+                int a = Integer.parseInt(String.valueOf(GLOB.get(args[0])));
                 a += Integer.parseInt(ParseText(args[2]));
                 GLOB.put(args[0], a);
             } else if(args.length > 2 && args[1].equals("-=")) {
@@ -391,7 +402,7 @@ public class YrC {
                     System.err.println("Ошибка! textParse Error! '" + args[0] + ":" + read + "'");
                     return false;
                 }
-                int a = Integer.parseInt((String) GLOB.get(args[0]));
+                int a = Integer.parseInt(String.valueOf( GLOB.get(args[0])));
                 a -= Integer.parseInt(ParseText(args[2]));
                 GLOB.put(args[0], a);
             } else if(args.length > 2 && args[1].equals("*=")) {
@@ -401,7 +412,7 @@ public class YrC {
                     return false;
                 }
                 //System.out.println(args[0]);
-                int a = Integer.parseInt((String) GLOB.get(args[0]));
+                int a = Integer.parseInt(String.valueOf( GLOB.get(args[0])));
                 a *= Integer.parseInt(ParseText(args[2]));
                 GLOB.put(args[0], a);
             } else if(args.length > 2 && args[1].equals("/=")) {
@@ -410,7 +421,7 @@ public class YrC {
                     System.err.println("Ошибка! textParse Error! '" + args[0] + ":" + read + "'");
                     return false;
                 }
-                int a = Integer.parseInt((String) GLOB.get(args[0]));
+                int a = Integer.parseInt(String.valueOf( GLOB.get(args[0])));
                 a /= Integer.parseInt(ParseText(args[2]));
                 GLOB.put(args[0], a);
             }
@@ -442,16 +453,20 @@ public class YrC {
         }catch (Exception e){e.printStackTrace();}
     }
     public String ParseText(String str){
-        String[] strd = str.split("\"");
-        if(strd.length < 2) {
-            str = (String) GLOB.get(str);
-            if(str == null) return null;
-        }else {
-            str = strd[1];
+        try {
+            String[] strd = str.split("\"");
+            if (strd.length < 2) {
+                str = GLOB.get(str).toString();
+                if (str == null) return null;
+            } else {
+                str = strd[1];
+            }
+            str = str.replace("/SP", " ");
+            str = str.replace("/RE", "\n");
+            return str;
+        }catch (Exception e){
+            return null;
         }
-        str = str.replace("/SP", " ");
-        str = str.replace("/RE", "\n");
-        return str;
     }
 
 }
